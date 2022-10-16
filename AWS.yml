@@ -13,7 +13,7 @@ Parameters:
     Default: S
     AllowedValues:
       - 'S'
-      - 'N'
+      - 'M'
       - 'B'
   SortKeyName:
     Description: The attribute name that is used as the Sort key for this table.
