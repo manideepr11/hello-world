@@ -1,0 +1,70 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: DynamoDB template to create a table with autoscaling
+Transform: AppleTaggingStandard
+
+Parameters:
+  PartitionKeyName:
+    Description: The attribute name that is used as the primary key for this table.
+    Type: String
+    Default: 'ami_reg_id'
+  PartitionKeyType:
+    Description: The data type of the attribute, S for string, N for numeric, B for binary
+    Type: String
+    Default: S
+    AllowedValues:
+      - 'S'
+      - 'N'
+      - 'B'
+  SortKeyName:
+    Description: The attribute name that is used as the Sort key for this table.
+    Type: String
+    Default: 'source_ami_id'
+  SortKeyType:
+    Description: The data type of the attribute, S for string, N for numeric, B for binary
+    Type: String
+    Default: S
+    AllowedValues:
+      - 'S'
+      - 'N'
+      - 'B'
+  ReadCapacityUnits:
+    Description: Sets the desired minimum number of consistent reads of items per second for the specified table before DynamoDB balances the load.
+    Type: String
+    Default: 5
+  WriteCapacityUnits:
+    Description: Sets the desired minimum number of consistent writes of items per second for the specified table before DynamoDB balances the load.
+    Type: String
+    Default: 5
+  AMITableName:
+    Description: DynamoDB TableName
+    Type: String
+    Default: 'AMIRegistry'
+  SplunkAMITableName:
+    Description: DynamoDB TableName
+    Type: String
+    Default: SplunkAMIRegistry
+
+
+Resources:
+ 
+  AMIRegistry:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      AttributeDefinitions:
+        - AttributeName: !Ref PartitionKeyName
+          AttributeType: !Ref PartitionKeyType
+        - AttributeName: !Ref SortKeyName
+          AttributeType: !Ref SortKeyType
+      KeySchema:
+        - AttributeName: !Ref PartitionKeyName
+          KeyType: HASH
+        - AttributeName: !Ref SortKeyName
+          KeyType: RANGE
+      SSESpecification:
+          SSEEnabled: true
+      ProvisionedThroughput:
+        ReadCapacityUnits: !Ref ReadCapacityUnits
+        WriteCapacityUnits: !Ref WriteCapacityUnits
+      TableName: !Ref AMITableName
+      PointInTimeRecoverySpecification:
+        PointInTimeRecoveryEnabled: true
